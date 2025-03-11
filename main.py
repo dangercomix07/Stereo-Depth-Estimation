@@ -4,14 +4,14 @@ import sys
 import cv2
 import numpy as np
 import torch
-import torch.nn as nnc
+import torch.nn as nn
 import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 
-# Inputes
-LEFT_IMAGE = "im0.png"
-RIGHT_IMAGE = "im1.png"
-DISPARITY_GT = "disp0.pfm"
+# Inputs
+LEFT_IMAGE = "testcases/image1/im0.png"
+RIGHT_IMAGE = "testcases/image1/im1.png"
+DISPARITY_GT = "testcases/image1/disp0.pfm"
 
 # ------------------------------
 # Add PSMNet to Python path
