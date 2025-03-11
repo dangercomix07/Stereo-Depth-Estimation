@@ -13,12 +13,18 @@ Stereo depth estimation aims to reconstruct a dense depth map from a pair of ste
 
 ## Repository Structure
 
-your-project/ 
-├── PSMNet/ # PSMNet model code (submodule folder) 
+```.
+Stereo-Depth-Estimation/ 
+├── PSMNet/ # PSMNet model code
 ├── main.py # Main script for inference and evaluation 
 ├── README.md # This file 
-├── LICENSE # Open source license (e.g., MIT) 
+├── LICENSE # Open source license (MIT) 
 └── requirements.txt # Dependencies for the project
+└── EE702_assignment2.pdf
+└── EE702_assignment2_Report.pdf
+└── Comparison.png # Output of running main.py
+└── predicted_disparity_map.png # Output of running main.py
+```
 
 
 ## Installation
