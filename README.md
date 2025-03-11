@@ -32,8 +32,8 @@ Stereo-Depth-Estimation/
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/your-username/your-project.git
-   cd your-project
+   git clone https://github.com/dangercomix07/Stereo-Depth-Estimation.git
+   cd Stereo-Depth-Estimation
 
 2. **Install dependencies:**
 Make sure you have Python (>=3.6) installed, then install the required packages:
@@ -90,5 +90,6 @@ Contributions are welcome! If you find issues or have suggestions, please open a
 This project is licensed under the MIT License -- See the LICENSE file for details.
 
 ## Acknowledgements
+- Prof Subhasis Chaudhuri, Instructor EE702, IIT Bombay
 - PSMNet : The deep learning model used for stereo depth estimation
 - ChatGPT has been used to help generate parts of this code and documentation
