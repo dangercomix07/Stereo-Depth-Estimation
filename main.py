@@ -25,7 +25,7 @@ from models import stackhourglass  # Import PSMNet model architecture
 # Load PSMNet Model
 # ------------------------------
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = stackhourglass(192)  # Initialize PSMNet with maximum disparity of 192
+model = stackhourglass(80)  # Initialize PSMNet with maximum disparity of 80
 model = nn.DataParallel(model)
 model.to(device)
 
@@ -33,6 +33,8 @@ model.to(device)
 model_path = "pretrained_model_KITTI2015.tar"
 model.load_state_dict(torch.load(model_path, map_location=device)['state_dict'])
 model.eval()  # Set to evaluation mode
+
+print("Model Loaded")
 
 # ------------------------------
 # Preprocessing for Stereo Images (for inference)
@@ -65,12 +67,14 @@ imgL = cv2.resize(imgL, (target_W, target_H))
 imgR = cv2.resize(imgR, (target_W, target_H))
 imgL_tensor, imgR_tensor = preprocess_stereo(imgL, imgR)
 
+print("Testcase Loaded")
+
 # ------------------------------
 # Run Inference with PSMNet
 # ------------------------------
 with torch.no_grad():
     output = model(imgL_tensor, imgR_tensor)
-    predicted_depth = output.squeeze().cpu().numpy()
+    predicted_depth = output.squeeze().cpu().numpy() # * 1.17  # Apply correction factor
 
 # Normalize predicted disparity for visualization
 predicted_depth_norm = (predicted_depth - predicted_depth.min()) / (predicted_depth.max() - predicted_depth.min())
@@ -117,11 +121,19 @@ disparity_map = np.nan_to_num(disparity_map, nan=0.0, posinf=0.0, neginf=0.0)
 predicted_depth_resized = cv2.resize(predicted_depth, (target_W, target_H), interpolation=cv2.INTER_LINEAR)
 gt_disparity_resized = cv2.resize(disparity_map, (target_W, target_H), interpolation=cv2.INTER_LINEAR)
 
-MAE = np.mean(np.abs(predicted_depth_resized - gt_disparity_resized))
-RMSE = np.sqrt(np.mean((predicted_depth_resized - gt_disparity_resized) ** 2))
+# MAE = np.mean(np.abs(predicted_depth_resized - gt_disparity_resized))
+# RMSE = np.sqrt(np.mean((predicted_depth_resized - gt_disparity_resized) ** 2))
 
-print(f"Mean Absolute Error (MAE): {MAE:.4f}")
-print(f"Root Mean Squared Error (RMSE): {RMSE:.4f}")
+valid_mask = (gt_disparity_resized > 0) & (predicted_depth_resized > 0)  # Ignore invalid values
+MAE = np.mean(np.abs(predicted_depth_resized[valid_mask] - gt_disparity_resized[valid_mask]))
+RMSE = np.sqrt(np.mean((predicted_depth_resized[valid_mask] -gt_disparity_resized[valid_mask]) ** 2))
+
+
+print(f"Mean Absolute Error (MAE): {MAE:.4f} pixels")
+print(f"Root Mean Squared Error (RMSE): {RMSE:.4f} pixels")
+
+bad_3 = np.mean(np.abs(predicted_depth_resized[valid_mask] - gt_disparity_resized[valid_mask]) > 3) * 100
+print(f"Bad-3 Error: {bad_3:.2f}% of pixels have disparity error > 3 pixels")
 
 # ------------------------------
 # Display side-by-side comparisons
